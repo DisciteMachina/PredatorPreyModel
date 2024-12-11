@@ -12,6 +12,11 @@ TODO:
  Predators shouldn't be going after prey if their hunger is >70
  Breeding
  Aging
+ If hunger level is high, predator should chase for longer
+ Improve random move, i.e:
+ move towards areas with more prey, or
+ move in places that it hasn't been to
+
  */
 
 
@@ -86,7 +91,7 @@ public class Board extends JPanel {
             p.move(prey, width, height);
 
             if (p.isStarving()) {
-                p.setHealth();
+                p.updateHealth();
             }
 
             if (p.getHealth() <= 0) {
@@ -98,7 +103,7 @@ public class Board extends JPanel {
             p.move(predators, width, height);
 
             if (p.isStarving()) {
-                p.setHealth();
+                p.updateHealth();
             }
 
             if (p.getHealth() <= 0) {
@@ -120,7 +125,6 @@ public class Board extends JPanel {
             while (preyIterator.hasNext()) {
                 Prey p = preyIterator.next();
                 if (predator.collidesWith(p)) {
-                    p.die();
                     predator.eat();
                     preyIterator.remove();
                 }

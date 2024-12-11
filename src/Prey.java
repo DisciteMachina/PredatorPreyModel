@@ -9,7 +9,6 @@ public class Prey {
     private double health;
     private double hunger;
     private final double speed;
-    private boolean dead;
     private final int preySize;
     private final Random random;
 
@@ -22,17 +21,17 @@ public class Prey {
         this.hunger = 100;
         this.speed = random.nextDouble() * 3 + 1;
         this.preySize = 5;
-        this.dead = false;
     }
 
     public void eat() {
-    }
 
-    public void die() {
-        dead = true;
     }
 
     public void move(ArrayList<Predator> predatorList, int boardWidth, int boardHeight) {
+        if (isDead()) {
+            return;
+        }
+
         if (!predatorList.isEmpty()) {
             flee(predatorList);
         } else {
@@ -41,7 +40,7 @@ public class Prey {
         position.x += (int) velocity.getX();
         position.y += (int) velocity.getY();
 
-        // Ensure predator stays within bounds
+        // Ensure prey stays within bounds
         if (position.x < 0) {
             position.x = 0;
             velocity.setLocation(-velocity.getX(), velocity.getY());
@@ -91,8 +90,17 @@ public class Prey {
         velocity.setLocation(velocity.getX() * speed, velocity.getY() * speed);
     }
 
+
     public boolean isStarving() {
         return hunger <= 0;
+    }
+
+    public void updateHealth() {
+        this.health -= -0.05;
+    }
+
+    public boolean isDead() {
+        return health <= 0;
     }
 
     public void draw(Graphics g) {
@@ -104,11 +112,11 @@ public class Prey {
         return position;
     }
 
-    public void setHealth() {
-        this.health -= 10;
-    }
-
     public double getHealth() {
         return health;
+    }
+
+    public int getPreySize() {
+        return preySize;
     }
 }

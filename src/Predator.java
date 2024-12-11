@@ -34,10 +34,15 @@ public class Predator {
     }
 
     public void move(ArrayList<Prey> preyList, int boardWidth, int boardHeight) {
+        if (isDead()) {
+            return;
+        }
+
         if (!preyList.isEmpty()) {
             Prey closestPrey = findPrey(preyList);
 
-            if (position.distance(closestPrey.getPosition()) < 100 || chaseTime > 0) {
+            if (position.distance(closestPrey.getPosition()) < 100 || hunger < 50) {
+                // More likely to chase when hunger is low
                 chasing = true;
                 chasePrey(closestPrey);
                 chaseTime = 30;
@@ -114,11 +119,22 @@ public class Predator {
     }
 
     public boolean collidesWith(Prey prey) {
-        int predatorSize = 10;
-        int preySize = 10;
+        int preySize = prey.getPreySize();
 
         return Math.abs(position.x - prey.getPosition().x) < (predatorSize / 2 + preySize / 2) &&
                 Math.abs(position.y - prey.getPosition().y) < (predatorSize / 2 + preySize / 2);
+    }
+
+    public boolean isStarving() {
+        return hunger <= 0;
+    }
+
+    public void updateHealth() {
+        this.health -= -0.05;
+    }
+
+    public boolean isDead() {
+        return health <= 0;
     }
 
     private Color getColorBasedOnHunger() {
@@ -129,24 +145,16 @@ public class Predator {
         return new Color(red, green, blue);
     }
 
-    public boolean isStarving() {
-        return hunger <= 0;
+    public Point getPosition() {
+        return position;
+    }
+
+    public double getHealth() {
+        return health;
     }
 
     public void draw(Graphics g) {
         g.setColor(getColorBasedOnHunger());
         g.fillRect(position.x, position.y, 5, 5);
-    }
-
-    public Point getPosition() {
-        return position;
-    }
-
-    public void setHealth() {
-        this.health -= 10;
-    }
-
-    public double getHealth() {
-        return health;
     }
 }
