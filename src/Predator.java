@@ -9,64 +9,133 @@ public class Predator {
     private double health;
     private double hunger;
     private final double speed;
+    private int predatorSize;
     private final Random random;
 
+    private boolean chasing;
+    private int chaseTime;
+
     public Predator(int startX, int startY) {
+        random = new Random();
         this.position = new Point(startX, startY);
         this.velocity = new Point2D.Double(0, 0);
-        random = new Random();
 
         this.health = random.nextDouble() * 50 + 25;
         this.hunger = 100;
-        this.speed = random.nextDouble() * 15 + 5;
+        this.speed = random.nextDouble() * 3 + 1;
+        this.predatorSize = 10;
+
+        this.chasing = false;
+        this.chaseTime = 0;
     }
 
-    public void eat() {
-
+    public void eat(Prey prey, ArrayList<Prey> preyList) {
+        hunger = 100;
+        preyList.remove(prey);
     }
 
     public void die() {
 
     }
 
-    public void move(ArrayList<Prey> preyList) {
-        /*
-        Move randomly until its within distance of prey (50?) pxs
-        When in distance, move directly toward prey
-        If prey runs out of distance, keep predator moving for a while
-        after a certain amount of time, predator goes back to randomly
-        moving
-         */
-
+    public void move(ArrayList<Prey> preyList, int boardWidth, int boardHeight) {
         if (!preyList.isEmpty()) {
             Prey closestPrey = findPrey(preyList);
-            chasePrey(closestPrey);
+
+            if (position.distance(closestPrey.getPosition()) < 100 || chaseTime > 0) {
+                chasing = true;
+                chasePrey(closestPrey);
+                chaseTime = 30;
+            } else {
+                chasing = false;
+            }
         } else {
+            chasing = false;
+        }
+
+        for (Prey prey : preyList) {
+            if (collidesWith(prey)) {
+                eat(prey, preyList);
+                break;
+            }
+        }
+
+        // If not chasing, move randomly
+        if (!chasing) {
             randomMove();
         }
+
+        // Update position
         position.x += (int) velocity.getX();
         position.y += (int) velocity.getY();
+
+        // Reduce chase timer
+        if (chaseTime > 0) chaseTime--;
+
+        // Ensure predator stays within bounds
+        if (position.x < 0) {
+            position.x = 0;
+            velocity.setLocation(-velocity.getX(), velocity.getY());
+        }
+        if (position.x > boardWidth - predatorSize) {
+            position.x = boardWidth - predatorSize;
+            velocity.setLocation(-velocity.getX(), velocity.getY());
+        }
+        if (position.y < 0) {
+            position.y = 0;
+            velocity.setLocation(velocity.getX(), -velocity.getY());
+        }
+        if (position.y > boardHeight - predatorSize) {
+            position.y = boardHeight - predatorSize;
+            velocity.setLocation(velocity.getX(), -velocity.getY());
+        }
     }
 
     private Prey findPrey(ArrayList<Prey> preyList) {
         Prey closestPrey = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        for (Prey p : preyList) {
+            double dist = position.distance(p.getPosition());
+            if (dist < closestDistance) {
+                closestDistance = dist;
+                closestPrey = p;
+            }
+        }
         return closestPrey;
     }
 
     private void chasePrey(Prey prey) {
+        double dx = prey.getPosition().x - position.x;
+        double dy = prey.getPosition().y - position.y;
+        double distance = Math.sqrt(dx * dx + dy * dy);
 
+        if (distance > 0) {
+            velocity.setLocation((dx / distance) * speed, (dy / distance) * speed);
+        }
     }
 
     private void randomMove() {
-
+        do {
+            velocity.setLocation(random.nextInt(3) - 1, random.nextInt(3) - 1);
+        } while (velocity.getX() == 0 && velocity.getY() == 0);
+        velocity.setLocation(velocity.getX() * speed, velocity.getY() * speed);
     }
 
     public boolean collidesWith(Prey prey) {
-        return false;
+        int predatorSize = 10;
+        int preySize = 10;
+
+        return Math.abs(position.x - prey.getPosition().x) < (predatorSize / 2 + preySize / 2) &&
+                Math.abs(position.y - prey.getPosition().y) < (predatorSize / 2 + preySize / 2);
     }
 
     public void draw(Graphics g) {
         g.setColor(Color.RED);
         g.fillRect(position.x, position.y, 10, 10);
+    }
+
+    public Point getPosition() {
+        return position;
     }
 }

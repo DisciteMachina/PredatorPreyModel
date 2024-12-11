@@ -54,8 +54,8 @@ public class Board extends JPanel {
     }
 
     private void update() {
-        for (Predator p : predators) p.move(prey);
-        for (Prey p : prey) p.move(predators);
+        for (Predator p : predators) p.move(prey, width, height);
+        for (Prey p : prey) p.move(predators, width, height);
 
         checkCollisions();
         repaint();
