@@ -1,23 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Board extends JPanel {
     private final int width = 700;
     private final int height = 700;
-    Color boardColor;
+    private final Color boardColor;
 
+    private final Simulation simulation;
     private final ArrayList<Predator> predators;
     private final ArrayList<Prey> prey;
 
-    public Board() {
+    public Board(int initialPredators, int initialPrey) {
         this.setPreferredSize(new Dimension(width, height));
-        this.setBackground(Color.BLACK);
         this.boardColor = new Color(135, 177, 115);
 
-        predators = new ArrayList<>();
-        prey = new ArrayList<>();
+        simulation = new Simulation(initialPredators, initialPrey, 700, 700);
+        predators = simulation.getPredators();
+        prey = simulation.getPrey();
     }
 
     @Override
@@ -37,7 +37,6 @@ public class Board extends JPanel {
 
     private void drawGrid(Graphics g) {
         g.setColor(Color.GRAY);
-
         int cellSize = 50;
 
         for (int i = 0; i < width; i += cellSize) {
@@ -51,18 +50,18 @@ public class Board extends JPanel {
 
     public void start() {
         Timer timer = new Timer(20, e -> update());
-        timer.start();;
+        timer.start();
     }
 
-    public void update() {
-        for (Predator p : predators) p.move();
-        for (Prey p : prey) p.move();
+    private void update() {
+        for (Predator p : predators) p.move(prey);
+        for (Prey p : prey) p.move(predators);
 
         checkCollisions();
         repaint();
     }
 
-    public void checkCollisions() {
+    private void checkCollisions() {
         for (Predator predator : predators) {
             for (Prey prey : prey) {
                 if (predator.collidesWith(prey)) {
