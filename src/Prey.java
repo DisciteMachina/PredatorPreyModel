@@ -10,7 +10,7 @@ public class Prey {
     private double hunger;
     private final double speed;
     private boolean dead;
-    private int preySize;
+    private final int preySize;
     private final Random random;
 
     public Prey(int startX, int startY) {
@@ -107,7 +107,7 @@ public class Prey {
     public void setHealth() {
         this.health -= 10;
     }
-    
+
     public double getHealth() {
         return health;
     }

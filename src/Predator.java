@@ -9,7 +9,7 @@ public class Predator {
     private double health;
     private double hunger;
     private final double speed;
-    private int predatorSize;
+    private final int predatorSize;
     private final Random random;
 
     private boolean chasing;

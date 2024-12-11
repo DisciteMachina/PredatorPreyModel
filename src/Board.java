@@ -1,12 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /*
-TODO: Add spawning food for prey to collect.
-TODO: Make health go down in increments rather than at once
-
+TODO:
+ Add spawning food for prey to collect.
+ Make health go down in increments rather than at once
+ Predators shouldn't be going after prey if their hunger is >70
+ Breeding
+ Aging
  */
 
 
@@ -15,18 +20,28 @@ public class Board extends JPanel {
     private final int height = 700;
     private final Color boardColor;
 
-    private final Simulation simulation;
-    private final ArrayList<Predator> predators;
-    private final ArrayList<Prey> prey;
+    private Simulation simulation;
+    private ArrayList<Predator> predators;
+    private ArrayList<Prey> prey;
 
     public Board(int initialPredators, int initialPrey) {
         this.setPreferredSize(new Dimension(710, 710));
         this.boardColor = new Color(135, 177, 115);
         this.setBackground(Color.BLACK);
 
-        simulation = new Simulation(initialPredators, initialPrey, 700, 700);
-        predators = simulation.getPredators();
-        prey = simulation.getPrey();
+        // Initialize simulation
+        initialize(initialPredators, initialPrey);
+
+        // Key listener for restarting the simulation
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_R) {  // 'R' key to restart simulation
+                    initialize(initialPredators, initialPrey);
+                }
+            }
+        });
+        this.setFocusable(true);
     }
 
     @Override
@@ -111,5 +126,13 @@ public class Board extends JPanel {
                 }
             }
         }
+    }
+
+    // Initialize
+    private void initialize(int initialPredators, int initialPrey) {
+        simulation = new Simulation(initialPredators, initialPrey, width, height);
+        predators = simulation.getPredators();
+        prey = simulation.getPrey();
+        repaint();
     }
 }

@@ -5,7 +5,7 @@ public class Main {
         JFrame frame = new JFrame("Predator and Prey Model");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Board board = new Board(5, 10);
+        Board board = new Board(10, 50);
         frame.add(board);
 
         frame.pack();
