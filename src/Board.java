@@ -1,6 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+/*
+TODO: Add spawning food for prey to collect.
+TODO: Make health go down in increments rather than at once
+
+ */
+
 
 public class Board extends JPanel {
     private final int width = 700;
@@ -12,8 +20,9 @@ public class Board extends JPanel {
     private final ArrayList<Prey> prey;
 
     public Board(int initialPredators, int initialPrey) {
-        this.setPreferredSize(new Dimension(width, height));
+        this.setPreferredSize(new Dimension(710, 710));
         this.boardColor = new Color(135, 177, 115);
+        this.setBackground(Color.BLACK);
 
         simulation = new Simulation(initialPredators, initialPrey, 700, 700);
         predators = simulation.getPredators();
@@ -54,8 +63,37 @@ public class Board extends JPanel {
     }
 
     private void update() {
-        for (Predator p : predators) p.move(prey, width, height);
-        for (Prey p : prey) p.move(predators, width, height);
+        // Temporary lists to hold predators and prey to remove
+        ArrayList<Predator> predatorsToRemove = new ArrayList<>();
+        ArrayList<Prey> preyToRemove = new ArrayList<>();
+
+        for (Predator p : predators) {
+            p.move(prey, width, height);
+
+            if (p.isStarving()) {
+                p.setHealth();
+            }
+
+            if (p.getHealth() <= 0) {
+                predatorsToRemove.add(p);
+            }
+        }
+
+        for (Prey p : prey) {
+            p.move(predators, width, height);
+
+            if (p.isStarving()) {
+                p.setHealth();
+            }
+
+            if (p.getHealth() <= 0) {
+                preyToRemove.add(p);
+            }
+        }
+
+        // Remove predators and prey after loops
+        predators.removeAll(predatorsToRemove);
+        prey.removeAll(preyToRemove);
 
         checkCollisions();
         repaint();
@@ -63,10 +101,13 @@ public class Board extends JPanel {
 
     private void checkCollisions() {
         for (Predator predator : predators) {
-            for (Prey p : prey) {
+            Iterator<Prey> preyIterator = prey.iterator();
+            while (preyIterator.hasNext()) {
+                Prey p = preyIterator.next();
                 if (predator.collidesWith(p)) {
                     p.die();
-                    predator.eat(p, prey);
+                    predator.eat();
+                    preyIterator.remove();
                 }
             }
         }

@@ -23,19 +23,14 @@ public class Predator {
         this.health = random.nextDouble() * 50 + 25;
         this.hunger = 100;
         this.speed = random.nextDouble() * 3 + 1;
-        this.predatorSize = 10;
+        this.predatorSize = 5;
 
         this.chasing = false;
         this.chaseTime = 0;
     }
 
-    public void eat(Prey prey, ArrayList<Prey> preyList) {
-        hunger = 100;
-        preyList.remove(prey);
-    }
-
-    public void die() {
-
+    public void eat() {
+        hunger = Math.min(100, hunger + 20);
     }
 
     public void move(ArrayList<Prey> preyList, int boardWidth, int boardHeight) {
@@ -51,13 +46,6 @@ public class Predator {
             }
         } else {
             chasing = false;
-        }
-
-        for (Prey prey : preyList) {
-            if (collidesWith(prey)) {
-                eat(prey, preyList);
-                break;
-            }
         }
 
         // If not chasing, move randomly
@@ -89,6 +77,9 @@ public class Predator {
             position.y = boardHeight - predatorSize;
             velocity.setLocation(velocity.getX(), -velocity.getY());
         }
+
+        // Decrease hunger over time
+        hunger = Math.max(0, hunger - 0.1);
     }
 
     private Prey findPrey(ArrayList<Prey> preyList) {
@@ -130,12 +121,32 @@ public class Predator {
                 Math.abs(position.y - prey.getPosition().y) < (predatorSize / 2 + preySize / 2);
     }
 
+    private Color getColorBasedOnHunger() {
+        int red = 255;
+        int green = (int) (hunger * 2.55);
+        int blue = 0;
+
+        return new Color(red, green, blue);
+    }
+
+    public boolean isStarving() {
+        return hunger <= 0;
+    }
+
     public void draw(Graphics g) {
-        g.setColor(Color.RED);
-        g.fillRect(position.x, position.y, 10, 10);
+        g.setColor(getColorBasedOnHunger());
+        g.fillRect(position.x, position.y, 5, 5);
     }
 
     public Point getPosition() {
         return position;
+    }
+
+    public void setHealth() {
+        this.health -= 10;
+    }
+
+    public double getHealth() {
+        return health;
     }
 }
