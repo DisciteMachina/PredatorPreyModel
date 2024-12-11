@@ -104,11 +104,4 @@ public class Prey {
     public Point getPosition() {
         return position;
     }
-
-    public void setHealth() {
-        health -= 10;
-        if (health == 0){
-            die();
-        }
-    }
 }

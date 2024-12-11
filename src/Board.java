@@ -63,10 +63,10 @@ public class Board extends JPanel {
 
     private void checkCollisions() {
         for (Predator predator : predators) {
-            for (Prey prey : prey) {
-                if (predator.collidesWith(prey)) {
-                    prey.die();
-                    predator.eat();
+            for (Prey p : prey) {
+                if (predator.collidesWith(p)) {
+                    p.die();
+                    predator.eat(p, prey);
                 }
             }
         }
