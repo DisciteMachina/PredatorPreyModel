@@ -22,8 +22,8 @@ public class Predator {
 
         this.health = random.nextDouble() * 50 + 25;
         this.hunger = 100;
-        this.speed = random.nextDouble() * 3 + 1;
-        this.predatorSize = 5;
+        this.speed = random.nextDouble() * 2;
+        this.predatorSize = 8;
 
         this.chasing = false;
         this.chaseTime = 0;
@@ -36,6 +36,10 @@ public class Predator {
     public void move(ArrayList<Prey> preyList, int boardWidth, int boardHeight) {
         if (isDead()) {
             return;
+        }
+
+        if (isStarving()) {
+            updateHealth();
         }
 
         if (!preyList.isEmpty()) {
@@ -82,7 +86,6 @@ public class Predator {
             position.y = boardHeight - predatorSize;
             velocity.setLocation(velocity.getX(), -velocity.getY());
         }
-
         // Decrease hunger over time
         hunger = Math.max(0, hunger - 0.1);
     }
@@ -130,7 +133,7 @@ public class Predator {
     }
 
     public void updateHealth() {
-        this.health -= -0.05;
+        this.health -= 0.5;
     }
 
     public boolean isDead() {
@@ -141,7 +144,6 @@ public class Predator {
         int red = 255;
         int green = (int) (hunger * 2.55);
         int blue = 0;
-
         return new Color(red, green, blue);
     }
 

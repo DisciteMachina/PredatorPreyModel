@@ -16,7 +16,14 @@ TODO:
  Improve random move, i.e:
  move towards areas with more prey, or
  move in places that it hasn't been to
-
+ stamina
+ stop prey from bunching in corner
+ natural healing over time if hunger > 80 for both
+ differentiate between male and female pred and prey (?)
+ different types of predators?
+ predators that attack predators?
+ fights?
+ im getting way ahead of myself
  */
 
 
@@ -89,11 +96,6 @@ public class Board extends JPanel {
 
         for (Predator p : predators) {
             p.move(prey, width, height);
-
-            if (p.isStarving()) {
-                p.updateHealth();
-            }
-
             if (p.getHealth() <= 0) {
                 predatorsToRemove.add(p);
             }
@@ -101,11 +103,6 @@ public class Board extends JPanel {
 
         for (Prey p : prey) {
             p.move(predators, width, height);
-
-            if (p.isStarving()) {
-                p.updateHealth();
-            }
-
             if (p.getHealth() <= 0) {
                 preyToRemove.add(p);
             }
