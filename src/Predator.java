@@ -45,8 +45,8 @@ public class Predator {
         if (!preyList.isEmpty()) {
             Prey closestPrey = findPrey(preyList);
 
+            // Only chase if prey is close enough or the predator is hungry
             if (position.distance(closestPrey.getPosition()) < 100 || hunger < 50) {
-                // More likely to chase when hunger is low
                 chasing = true;
                 chasePrey(closestPrey);
                 chaseTime = 30;
@@ -62,14 +62,12 @@ public class Predator {
             randomMove();
         }
 
-        // Update position
         position.x += (int) velocity.getX();
         position.y += (int) velocity.getY();
 
-        // Reduce chase timer
         if (chaseTime > 0) chaseTime--;
 
-        // Ensure predator stays within bounds
+        // Ensure predator stays within bounds of the board
         if (position.x < 0) {
             position.x = 0;
             velocity.setLocation(-velocity.getX(), velocity.getY());
@@ -86,6 +84,7 @@ public class Predator {
             position.y = boardHeight - predatorSize;
             velocity.setLocation(velocity.getX(), -velocity.getY());
         }
+
         // Decrease hunger over time
         hunger = Math.max(0, hunger - 0.1);
     }

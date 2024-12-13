@@ -85,7 +85,20 @@ public class Prey {
             double dx = position.x - closestPredator.getPosition().x;
             double dy = position.y - closestPredator.getPosition().y;
             double distance = Math.sqrt(dx * dx + dy * dy);
-            velocity.setLocation((dx / distance) * speed, (dy / distance) * speed);
+
+            double fleeDirectionX = dx / distance;
+            double fleeDirectionY = dy / distance;
+
+            double randomFactor = random.nextDouble() * 0.5 - 0.25;
+            fleeDirectionX += randomFactor;
+            fleeDirectionY += randomFactor;
+
+            double fleeDirectionMagnitude = Math.sqrt(fleeDirectionX * fleeDirectionX + fleeDirectionY * fleeDirectionY);
+            fleeDirectionX /= fleeDirectionMagnitude;
+            fleeDirectionY /= fleeDirectionMagnitude;
+
+            double randomSpeed = speed + (random.nextDouble() * 0.5 - 0.25);
+            velocity.setLocation(fleeDirectionX * randomSpeed, fleeDirectionY * randomSpeed);
         }
     }
 
@@ -95,6 +108,7 @@ public class Prey {
         } while (velocity.getX() == 0 && velocity.getY() == 0);
         velocity.setLocation(velocity.getX() * speed, velocity.getY() * speed);
     }
+
 
     public boolean isStarving() {
         return hunger <= 0;
